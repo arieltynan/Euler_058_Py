@@ -2,7 +2,8 @@
 #Euler Problem 058, Spiral primes, Solved in Python
 #Started 8 March 2022
 
-from numpy import sqrt
+import numpy
+from math import sqrt, ceil
 
 #Prime number sieve used in previous problems, including Euler_050_Py
 def prime_Sieve(n): #Function modified from Geeksforgeeks
@@ -23,46 +24,54 @@ def prime_Sieve(n): #Function modified from Geeksforgeeks
     prime[1]= False
     # Print all prime numbers
     for p in range(n + 1):
-        if prime[p]:
+        if prime[p] and p != 2:
             primes.append(p)
     return primes
 
+def primesfrom2to(n):
+    """ Input n>=6, Returns a array of primes, 2 <= p < n """
+    sieve = numpy.ones(int(n/3 + (n%6==2)), dtype=numpy.bool)
+    for i in range(1,int(int(n**0.5)/3+1)):
+        if sieve[i]:
+            k=int(3*i+1|1)
+            sieve[int(k*k/3)::2*k] = False
+            sieve[int(k*(k-2*(i&1)+4)/3)::2*k] = False
+    return numpy.r_[2,3,((3*numpy.nonzero(sieve)[0][1:]+1)|1)]
+
 #Problem range n
-n = 10000000
+n = 1200000000 #max primes capable by computer
 
-prime_list = prime_Sieve(n)
-#print(prime_list)
-ratio = 1
-
-#Create spiral
-dia = 1 #diameter of square
-tot_checks = 0 #total corners checked
+prime_list = primesfrom2to(n) #faster prime sieve
+tot_checks = 1 #total corners checked
 primes = 0
-for i in range(1,n):
-    if i == dia*dia or i == dia*dia + (dia + 1) or i == dia*dia + 2*(dia + 1) or i == dia*dia + 3*(dia + 1):#check for corner
-        tot_checks = tot_checks + 1
-        #print(i)
-        if i in prime_list:
-            primes = primes + 1
-        if i == dia*dia + 3*(dia + 1) and i != 1:
-            dia = dia + 2
-
-    #if i % 2 == 1 and sqrt(i).is_integer() and i != 1:
-    #    dia = dia + 2
-     #   #print(i,dia)
-     #   tot_checks = tot_checks + 1
-        
-    
-    if primes/tot_checks < ratio and i > 30:
-        ratio = primes/tot_checks
-        print(ratio)
-        if ratio < 0.1:
-            print(i,dia, ratio)
+ratio = 1 #running decimal of primes to non primes
+solved = False
+while solved == False:
+    for i in range(1,120000,2): #increments for every diameter i up to 119999
+        for j in range(1,5):
+            tot_checks = tot_checks + 1
+            temp = i*i + j*(i+1)
+            #print(temp)
+            if temp in prime_list:
+                primes = primes + 1
+                #print(temp)
+        if primes/tot_checks < ratio:
+            ratio = primes/tot_checks
+            print(i+2,primes, tot_checks, ratio) 
+        if primes/tot_checks < .1 and i > 3:
+            print("SOLVED:",i+2,temp,primes/tot_checks)
+            solved = True
             break
+                
+                
+
+    
 
 
 
 
+#Pattern
+# 1 3 5 7 9 13 17 21 25
 
 # 17 16 15 14 13
 # 18 05 04 03 12
