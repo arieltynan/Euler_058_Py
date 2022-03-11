@@ -1,6 +1,6 @@
 #Ariel Tynan
 #Euler Problem 058, Spiral primes, Solved in Python
-#Started 8 March 2022
+#Started 8 March 2022. Solved 11 March 2022
 
 import numpy
 from math import sqrt, ceil
